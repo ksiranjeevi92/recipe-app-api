@@ -4,9 +4,11 @@ services:
   app:
     build:
       context: .
+      args:
+        - DEV=true
       dockerfile: Dockerfile
     ports:
-      - "8000:8080"
+      - "8000:8000"
     volumes:
       - ./app:/app
     command: >
