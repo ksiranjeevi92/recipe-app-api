@@ -41,7 +41,9 @@ INSTALLED_APPS = [
     'core',
     'rest_framework',
     'drf_spectacular',
+    'django_filters',
     'user',
+    'product.apps.ProductConfig'
 ]
 
 MIDDLEWARE = [
