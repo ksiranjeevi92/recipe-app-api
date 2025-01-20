@@ -87,11 +87,12 @@ def update_product(request,pk):
 
     return Response({'product': res.data})
 
-@api_view(["DELETE"])
-def delete_product(request,pk):
-
+@api_view(["DELETE", "GET"])
+def delete_product(request, pk):
+    if request.method == "GET":
+        return Response({'message': 'Use DELETE to delete the product'}, status=status.HTTP_405_METHOD_NOT_ALLOWED)
+    
     product = get_object_or_404(Product, id=pk)
-
+    ProductImages.objects.filter(product=pk).delete()
     product.delete()
-
-    return Response({'message': 'product deleted', },status=status.HTTP_200_OK)
+    return Response({'message': 'product deleted'}, status=status.HTTP_200_OK)
