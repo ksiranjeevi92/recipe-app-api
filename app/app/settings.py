@@ -42,6 +42,7 @@ INSTALLED_APPS = [
     'rest_framework',
     'drf_spectacular',
     'django_filters',
+    'storages',
     'user',
     'product.apps.ProductConfig'
 ]
@@ -89,6 +90,10 @@ DATABASES = {
         'PASSWORD': os.environ.get('DB_PASS'),
         'PORT': '5432'
     }
+}
+
+REST_FRAMEWORK = {
+    'EXCEPTION_HANDLER':  'utils.custom_exception_handler.custom_exception_handler'
 }
 
 
