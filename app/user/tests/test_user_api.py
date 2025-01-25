@@ -7,6 +7,8 @@ from rest_framework import status
 
 CREATE_USER_URL = reverse('user:create')
 
+ME_URL = reverse("user:me")
+
 def create_user(**params):
     '''Create and return new user'''
     return get_user_model().objects.create_user(**params)
@@ -61,3 +63,50 @@ class PublicUserAPITests(TestCase):
         ).exists()
 
         self.assertFalse(user_exists)
+
+    def test_retrieve_user_authorized(self):
+        """Test authentication is required for user"""
+
+        res = self.client.get(ME_URL)
+
+        self.assertEqual(res.status_code, status.HTTP_401_UNAUTHORIZED)
+
+class PrivateUserAPITest(TestCase):
+    """Test API requests that required API authentication"""
+    def setUp(self):
+        self.user = create_user(
+            email='test@emaole.com',
+            password = 'password@12345',
+            name= ' Test User'
+        )
+        self.client = APIClient()
+
+        self.client.force_authenticate(user=self.user)
+
+    def test_retrieve_profile_success(self):
+        res = self.client.get(ME_URL)
+
+        self.assertEqual(res.status_code, status.HTTP_200_OK)
+
+        self.assertEqual(res.data, {
+            'name': self.user.name,
+            'email': self.user.email
+        })
+
+    def test_post_me_not_allowed(self):
+        res = self.client.post(ME_URL, {})
+
+        self.assertEqual(res.status_code,status.HTTP_405_METHOD_NOT_ALLOWED)
+
+    def test_update_user_profile(self):
+        payload = {
+            'name': 'Updated name',
+            'password': 'newpassword123'
+        }
+
+        res = self.client.patch(ME_URL,payload)
+
+        self.user.refresh_from_db()
+
+        self.assertEqual(self.user.name, payload['name'])
+        self.assertEqual(res.status_code, status.HTTP_200_OK)
