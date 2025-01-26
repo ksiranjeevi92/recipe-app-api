@@ -7,7 +7,7 @@ from rest_framework import status
 from rest_framework.test import APIClient
 
 
-from core.models import Tag
+from core.models import (Tag,Ingredient)
 
 from recipe.serializers import TagSerializer
 
@@ -95,3 +95,14 @@ class ProvateTagAPITest(TestCase):
         tags = Tag.objects.filter(user=self.user)
 
         self.assertFalse(tags.exists())
+
+    def test_create_ingredient(self):
+        """Test Ingredient"""
+        user = create_user(email='f@gail.com')
+
+        ingredient = Ingredient.objects.create(
+            user=user,
+            name='Ingredient1'
+        )
+
+        self.assertEqual(str(ingredient), ingredient.name)
